@@ -36,22 +36,17 @@ const Users = () => {
         setUser(data);
     };
 
-    const handleGenerateHelp = async () => {
-        const prompt = { prompt: form.description };
+    function handleGenerateHelp() {
+        const prompt = form.description;
         setIsLoading(true);
-        try {
-            const response = await fetch('http://localhost:3003/chat/gemini', {
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(prompt),
-            });
-            const data = await response.json();
-            setForm({ ...form, prescription: data.response });
-            console.log(data);
-        } catch (error) {
-            console.log(error);
-        }
-        setIsLoading(false);
+
+        fetch(`http://localhost:3003/chat/context?message=${prompt}`).then((res) => res.json()).then((answer) => { 
+            setForm({ ...form, prescription: answer.response });
+            setIsLoading(false);
+        }).catch((error) => {
+            console.log('Error:', error);
+            setIsLoading(false);
+        });
     };
 
     const createDescription = async (e) => {
